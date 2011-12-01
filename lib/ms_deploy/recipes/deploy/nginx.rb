@@ -1,3 +1,5 @@
+require "ms_deploy/render"
+
 Capistrano::Configuration.instance.load do
 
   namespace :deploy do
@@ -31,7 +33,7 @@ Capistrano::Configuration.instance.load do
         vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'server_name' => server_name}
         config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
-        put(MsDeploy::render_erb_template(template_path, vars), config_path)
+        put(render_erb_template(template_path, vars), config_path)
         sudo "rm -f /etc/nginx/sites-enabled/#{application}.conf"
         sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}.conf"
       end
