@@ -5,10 +5,11 @@ Capistrano::Configuration.instance.load do
   namespace :deploy do
     namespace :prepare do
       task :database do
-        set_unless :db_admin_user, 'root'
-        set_unless :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user #{db_admin_user}: ")
-        set_unless :db_name, application.to_s + '_' + rails_env.to_s
-        set_unless :db_password, database_config['password']
+        set :db_admin_user, 'root' unless fetch(:db_admin_user, nil)
+        set :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}': ") unless fetch(:db_admin_password, nil)
+        set :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s unless fetch(:db_name, nil)
+        set :db_user_name, 'root' unless fetch(:db_user_name, nil)
+        set :db_user_password, '' unless fetch(:db_user_password, nil)
 
         unless database_exits?
           create_database
@@ -38,7 +39,7 @@ Capistrano::Configuration.instance.load do
 
   def setup_database_permissions
     grant_sql = <<-SQL
-       GRANT ALL PRIVILEGES ON #{db_name}.* TO #{application}@localhost IDENTIFIED BY '#{db_password}';
+       GRANT ALL PRIVILEGES ON #{db_name}.* TO #{db_user_name}@localhost IDENTIFIED BY '#{db_user_password}';
     SQL
 
     run "mysql --user=#{db_admin_user} --password=#{db_admin_password} --execute=\"#{grant_sql}\""
