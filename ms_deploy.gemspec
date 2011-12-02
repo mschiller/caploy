@@ -18,7 +18,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency('capistrano-ext')
   gem.add_dependency('erubis')
 
-  #gem 'cap-recipes', '>= 0.3.36', :require => false         # http://github.com/nesquena/cap-recipes
-
   gem.version       = MsDeploy::VERSION
 end
