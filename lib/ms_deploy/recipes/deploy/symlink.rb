@@ -19,7 +19,6 @@ Capistrano::Configuration.instance.load do
     end
   end
 
-  before 'deploy:finalize_update', 'deploy:symlink'
   after 'deploy:symlink', 'deploy:symlink_dependencies'
 
 end

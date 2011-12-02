@@ -2,7 +2,7 @@ require "ms_deploy/render"
 
 Capistrano::Configuration.instance.load do
 
-  namespace :deploy do
+  namespace :service do
     namespace :nginx do
       desc <<-DESC
         Starts the nginx web-server.
@@ -44,6 +44,6 @@ Capistrano::Configuration.instance.load do
     end
   end
 
-  after :"deploy:setup", :"deploy:nginx:install";
+  after :"deploy:setup", :"service:nginx:install";
 
 end

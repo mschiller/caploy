@@ -2,14 +2,11 @@ Capistrano::Configuration.instance.load do
 
   namespace :deploy do
     namespace :prepare do
-      task :create_config do
+      task :create_config_files do
         run "mkdir -p #{shared_path}/config/"
-        put(File.read(database_config_file), "#{shared_path}/config/#{fetch(:configuration_file_prefix, 'config')}.production.yml", :via => :scp)
-      end
-
-      task :create_database_config do
-        run "mkdir -p #{shared_path}/config/"
-        put(File.read(database_config_file), "#{shared_path}/config/database.yml", :via => :scp)
+        config_file_to_setup.each do |config_file|
+          put(File.read(config_file_path(config_file)), "#{shared_path}/config/#{config_file}", :via => :scp)
+        end
       end
 
       desc "Set up shared directory structure"
@@ -17,21 +14,56 @@ Capistrano::Configuration.instance.load do
         shared_directories_to_create.each { |directory| run "mkdir -p #{directory}" }
       end
 
-      #desc "Rebuilds css and js asset packages"
-      #task :rebuild_asset_cache, :roles => :app do
-      #  run "cd #{current_path} && #{rake_path} RAILS_ENV=#{fetch(:rails_env, "production")} asset:packager:build_all"
-      #end
+      task :database do
+        set :db_admin_user, 'root' unless fetch(:db_admin_user, nil)
+        set :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ") unless fetch(:db_admin_password, nil)
+        set :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s unless fetch(:db_name, nil)
+        set :db_user_name, application unless fetch(:db_user_name, nil)
+        set :db_user_password, '' unless fetch(:db_user_password, nil)
+
+        unless db_admin_password.to_s.empty?
+          unless database_exits?
+            create_database
+          end
+          setup_database_permissions
+        end
+      end
     end
   end
 
-  before :"deploy:setup", :"deploy:prepare:create_config";
-  before :"deploy:setup", :"deploy:prepare:create_database_config";
+  before :"deploy:setup", :"deploy:prepare:create_config_files";
   before :"deploy:setup", :"deploy:prepare:create_shared_folders";
 
 end
 
-def database_config_file
-  config_file = "#{rails_root}/config/#{fetch(:configuration_file_prefix, 'config')}.#{fetch(:stage, 'production')}.yml"
-  raise "No config file '#{config_file}' for '#{fetch(:stage, 'production')}'" unless File.exists? config_file
+def config_file_path(config_file_name)
+  config_file = "#{rails_root}/config/#{config_file_name}"
+  raise "No config file '#{config_file}'" unless File.exists? config_file
   config_file
+end
+
+def database_exits?
+  exists = false
+
+  run "mysql --user=#{db_admin_user} --password=#{db_admin_password} --execute=\"show databases;\"" do |channel, stream, data|
+    exists = exists || data.include?(db_name)
+  end
+
+  exists
+end
+
+def create_database
+  create_sql = <<-SQL
+      CREATE DATABASE #{db_name};
+  SQL
+
+  run "mysql --user=#{db_admin_user} --password=#{db_admin_password} --execute=\"#{create_sql}\""
+end
+
+def setup_database_permissions
+  grant_sql = <<-SQL
+     GRANT ALL PRIVILEGES ON #{db_name}.* TO #{db_user_name}@localhost IDENTIFIED BY '#{db_user_password}';
+  SQL
+
+  run "mysql --user=#{db_admin_user} --password=#{db_admin_password} --execute=\"#{grant_sql}\""
 end
