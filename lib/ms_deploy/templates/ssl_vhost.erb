@@ -16,7 +16,7 @@ upstream <%= application %>_server {
 server {
 
   listen 443;
-  server_name <%= server_name %>;
+  server_name <%= domain %>;
 
   ssl                  on;
   ssl_certificate      /usr/local/nginx/conf/cert.pem;

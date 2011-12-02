@@ -17,7 +17,7 @@ Capistrano::Configuration.instance.load do
 
   namespace :bundler do
     task :install_gem do
-      run "cd #{current_path} && gem install bundler --pre --no-ri --no-rdoc"
+      run "cd #{release_path} && gem install bundler --pre --no-ri --no-rdoc"
     end
   end
 
