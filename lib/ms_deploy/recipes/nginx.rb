@@ -30,7 +30,7 @@ Capistrano::Configuration.instance.load do
 
       task :install  do
         template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
-        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => domain}
+        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain}
         config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
         put(render_erb_template(template_path, vars), config_path)

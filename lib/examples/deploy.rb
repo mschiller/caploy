@@ -1,7 +1,8 @@
 
 set :application, ''
 set :domain, ''
-set :server_domain, ''
+set :deploy_domain, ''
+set :vhost_domain, ''
 
 set :user,  'deploy'
 set :group, 'deploy'
