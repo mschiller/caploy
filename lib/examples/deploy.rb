@@ -73,8 +73,7 @@ set(:shared_directories_to_create) {
 
 set(:shared_directories_to_link) {
   {
-    "#{shared_path}/bundle/" => "#{release_path}/vendor/bundle",
-    "#{shared_path}/solr/" => "#{release_path}/solr"
+    "#{shared_path}/bundle/" => "#{release_path}/vendor/bundle"
   }
 }
 
@@ -87,15 +86,15 @@ set(:directories_to_create) {
 
 set(:files_to_link) {
   {
-    "#{shared_path}/config/config.production.yml" => "#{release_path}/config/config.local.yml",
-    "#{shared_path}/config/unicorn.production.rb" => "#{release_path}/config/unicorn.production.rb"
+    "#{shared_path}/config/config.#{stage}.yml" => "#{release_path}/config/config.local.yml",
+    "#{shared_path}/config/unicorn.#{stage}.rb" => "#{release_path}/config/unicorn.production.rb"
   }
 }
 
 set(:config_file_to_setup) {
   [
-    "config.production.yml",
-    "unicorn.production.rb"
+    "config.#{stage}.yml",
+    "unicorn.#{stage}.rb"
   ]
 }
 

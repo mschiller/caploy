@@ -30,16 +30,16 @@ Capistrano::Configuration.instance.load do
 
       task :install  do
         template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
-        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain}
+        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain, 'stage' => stage}
         config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
         put(render_erb_template(template_path, vars), config_path)
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}.conf"
-        sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}.conf"
+        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+        sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
       end
 
       task :uninstall  do
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}.conf"
+        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
       end
     end
   end

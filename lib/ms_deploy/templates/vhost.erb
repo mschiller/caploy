@@ -1,11 +1,11 @@
 
-upstream <%= application %>_server {
+upstream <%= application %>_<%= stage %>_server {
   # fail_timeout=0 means we always retry an upstream even if it failed
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
 
   # This is the socket we configured in unicorn.rb
-  server unix:/tmp/sockets/<%= application %>.sock fail_timeout=0;
+  server unix:/tmp/sockets/<%= application %>_<%= stage %>.sock fail_timeout=0;
 
   # for TCP setups, point these to your backend servers
   # server 127.0.0.1:8080 fail_timeout=0;
@@ -67,7 +67,7 @@ server {
     # proxy_buffering off;
 
     if (!-f $request_filename) {
-      proxy_pass http://<%= application %>_server;
+      proxy_pass http://<%= application %>_<%= stage %>_server;
       break;
     }
   }
