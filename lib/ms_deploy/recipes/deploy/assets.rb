@@ -8,6 +8,7 @@ Capistrano::Configuration.instance.load do
       end
 
       after 'deploy', 'deploy:assets:compile'
+      after 'deploy:migrations', 'deploy:assets:compile'
 
     end
   end
