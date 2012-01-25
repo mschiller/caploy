@@ -70,6 +70,11 @@ server {
       proxy_pass http://<%= application %>_<%= stage %>_server;
       break;
     }
+
+    <% if auth_basic_title %>
+    auth_basic            "<%= auth_basic_title %>";
+    auth_basic_user_file  <%= auth_basic_password_file %>;
+    <% end %>
   }
 
   # Rails error pages
