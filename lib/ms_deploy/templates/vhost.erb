@@ -28,6 +28,18 @@ server {
   # path for static files
   root <%= project_root %>/public;
 
+  ### Stop Image and Document Hijacking
+  #location ~* (\.jpg|\.png|\.css)$ {
+  #  if ($http_referer !~ ^(http://mydomain.com) ) {
+  #    return 405;
+  #  }
+  #}
+
+  location ~* \.(ico|css|js|gif|jpe?g|png)(\?[0-9]+)?$ {
+    expires max;
+    break;
+  }
+
   # Prefer to serve static files directly from nginx to avoid unnecessary
   # data copies from the application server.
   #
