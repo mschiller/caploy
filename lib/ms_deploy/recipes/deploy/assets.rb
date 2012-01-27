@@ -7,8 +7,8 @@ Capistrano::Configuration.instance.load do
         run "cd #{release_path}; RAILS_ENV=#{rails_env} #{rake} assets:precompile"
       end
 
-      after 'deploy', 'deploy:assets:compile'
-      after 'deploy:migrations', 'deploy:assets:compile'
+      #after 'deploy', 'deploy:assets:compile'
+      #after 'deploy:migrations', 'deploy:assets:compile'
 
     end
   end
