@@ -1,12 +1,11 @@
 Capistrano::Configuration.instance.load do
 
-  set :puma_binary, fetch(:puma_binary, "bundle exec puma")
-  set :pumactl_binary, fetch(:pumactl_binary,  "bundle exec pumactl")
-  set :puma_state, fetch(:puma_state,  "tmp/puma_state")
-  set :puma_tcp_port, fetch(:puma_tcp_port,  nil)
-  set :puma_tcp_port, fetch(:puma_control_tcp_port,  9292)
-  set :puma_control_tcp_port, fetch(:puma_control_tcp_port,  puma_tcp_port.to_i + 1)
-  set :puma_thread_pool, '0:16'
+  _cset :puma_binary, "bundle exec puma"
+  _cset :pumactl_binary, "bundle exec pumactl"
+  _cset :puma_state, "tmp/puma_state"
+  _cset :puma_tcp_port, 9292
+  _cset :puma_control_tcp_port, puma_tcp_port.to_i + 1
+  _cset :puma_thread_pool, '0:16'
 
   namespace :deploy do
     task :start, :roles => :app, :except => { :no_release => true } do
