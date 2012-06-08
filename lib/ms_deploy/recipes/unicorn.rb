@@ -19,12 +19,7 @@ Capistrano::Configuration.instance.load do
 
     desc 'Restart unicorn'
     task :restart, :roles => :app, :except => {:no_release => true} do
-      run "cd #{current_path} && #{try_sudo} kill -HUP `cat #{current_path}/#{unicorn_pid}`"
-    end
-
-    desc 'Reexecute unicorn'
-    task :reexec, :roles => :app, :except => {:no_release => true} do
-      run "cd #{current_path} && kill -USR2 `cat #{current_path}/#{unicorn_pid}`"
+      run "cd #{current_path} && #{try_sudo} kill -USR2 `cat #{current_path}/#{unicorn_pid}`"
     end
   end
 end

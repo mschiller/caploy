@@ -14,6 +14,8 @@ Gem::Specification.new do |gem|
   gem.name          = "ms_deploy"
   gem.require_paths = ["lib"]
 
+  gem.add_dependency('gemcutter')
+
   gem.add_dependency('capistrano', '>= 2.12.0')
   gem.add_dependency('capistrano-ext', '>= 1.2.1')
   gem.add_dependency('capistrano_colors', '>= 0.5.5')
