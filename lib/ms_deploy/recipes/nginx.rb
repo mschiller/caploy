@@ -31,7 +31,7 @@ Capistrano::Configuration.instance.load do
       task :install  do
         protocol = fetch(:protocol, nil).to_s
         template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
-        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain, 'stage' => stage, 'auth_basic_title' => fetch(:auth_basic_title, nil), 'auth_basic_password_file' => fetch(:auth_basic_password_file, nil), 'protocol' => 'http', 'nginx_cert_dir' => fetch(:nginx_cert_dir, '/etc/nginx/cert'), 'with_upstream_server' => true}
+        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain, 'stage' => stage, 'auth_basic_title' => fetch(:auth_basic_title, nil), 'auth_basic_password_file' => fetch(:auth_basic_password_file, nil), 'protocol' => 'http', 'nginx_cert_dir' => fetch(:nginx_cert_dir, '/etc/nginx/cert'), 'with_upstream_server' => true, 'with_file_expire_max' => fetch(:with_file_expire_max, true), 'optional_http_content' => fetch(:optional_nginx_server_http_content, ''), 'optional_https_content' => fetch(:optional_nginx_server_https_content, '')}
 
         if protocol.nil? or protocol == 'http' or protocol == 'both'
           config_path = "#{shared_path}/config/#{application}_vhost.conf"

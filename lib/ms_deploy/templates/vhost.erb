@@ -52,10 +52,15 @@ server {
   #  }
   #}
 
+<% if with_file_expire_max %>
   location ~* \.(ico|css|js|gif|jpe?g|png)(\?[0-9]+)?$ {
     expires max;
     break;
   }
+<% end %>
+
+  <%= optional_http_content if protocol == 'http' %>
+  <%= optional_https_content if protocol == 'https' %>
 
   # Prefer to serve static files directly from nginx to avoid unnecessary
   # data copies from the application server.
