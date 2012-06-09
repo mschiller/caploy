@@ -1,4 +1,4 @@
-require "ms_deploy/render"
+require "ms_deploy/render"         
 
 Capistrano::Configuration.instance.load do
 
@@ -29,17 +29,36 @@ Capistrano::Configuration.instance.load do
       end
 
       task :install  do
+        protocol = fetch(:protocol, nil).to_s
         template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
-        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain, 'stage' => stage, 'auth_basic_title' => fetch(:auth_basic_title, nil), 'auth_basic_password_file' => fetch(:auth_basic_password_file, nil)}
-        config_path = "#{shared_path}/config/#{application}_vhost.conf"
+        vars = {'application'=> application, 'project_root' => deploy_to + '/current', 'domain' => vhost_domain, 'stage' => stage, 'auth_basic_title' => fetch(:auth_basic_title, nil), 'auth_basic_password_file' => fetch(:auth_basic_password_file, nil), 'protocol' => 'http', 'nginx_cert_dir' => fetch(:nginx_cert_dir, '/etc/nginx/cert'), 'with_upstream_server' => true}
 
-        put(render_erb_template(template_path, vars), config_path)
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
-        sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+        if protocol.nil? or protocol == 'http' or protocol == 'both'
+          config_path = "#{shared_path}/config/#{application}_vhost.conf"
+
+          put(render_erb_template(template_path, vars), config_path)
+          sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+          sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+        end
+        if protocol == 'https' or protocol == 'both'
+          vars.merge!({'protocol' => 'https', 'with_upstream_server' => false})
+
+          config_path = "#{shared_path}/config/#{application}_ssl_vhost.conf"
+
+          put(render_erb_template(template_path, vars), config_path)
+          sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
+          sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
+        end
       end
 
       task :uninstall  do
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+        protocol = fetch(:protocol, nil)
+
+        if protocol.blank? or protocol == 'http' or protocol == 'both'
+          sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
+        elsif protocol == 'https' or protocol == 'both'
+          sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
+        end
       end
     end
   end

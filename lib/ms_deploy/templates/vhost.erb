@@ -1,4 +1,6 @@
 
+<% if with_upstream_server %>
+
 upstream <%= application %>_<%= stage %>_server {
   # fail_timeout=0 means we always retry an upstream even if it failed
   # to return a good HTTP response (in case the Unicorn master nukes a
@@ -12,18 +14,33 @@ upstream <%= application %>_<%= stage %>_server {
   # server 192.168.0.8:8080 fail_timeout=0;
   # server 192.168.0.9:8080 fail_timeout=0;
 }
+<% end %>
 
 server {
 
-  listen 80;
   server_name <%= domain %>;
 
-  client_max_body_size 4G;
+<% if protocol == 'https' %>
+
+  listen 443 default_server ssl;
+
+  ssl_certificate      <%= nginx_cert_dir %>/<%= application %>_cert.pem;
+  ssl_certificate_key  <%= nginx_cert_dir %>/<%= application %>_cert.key;
+
+  keepalive_timeout    70;
+
+<% else %>
+
+  listen 80;
 
   # ~2 seconds is often enough for most folks to parse HTML/CSS and
   # retrieve needed images/icons/frames, connections are cheap in
   # nginx so increasing this is generally safe...
   #keepalive_timeout 5;
+
+<% end %>
+
+  client_max_body_size 4G;
 
   # path for static files
   root <%= project_root %>/public;

@@ -4,6 +4,7 @@ Capistrano::Configuration.instance.load do
   abort "You must set :user before using defaults" unless fetch(:user, nil)
   abort "You must set :repository before using defaults" unless fetch(:repository, nil)
   abort "You must set :branch before using defaults" unless fetch(:branch, nil)
+  abort "You must set :stage before using defaults" unless fetch(:stage, nil)
 
   set :uptodate_scm, :git
   set :uptodate_branch, fetch(:branch)
@@ -33,6 +34,8 @@ Capistrano::Configuration.instance.load do
 
   set :group, user
 
+  set :protocol, :both
+
   set :scm, :git
   set :git_enable_submodules, true
 
@@ -47,6 +50,9 @@ Capistrano::Configuration.instance.load do
   set :ssh_options, {:port => fetch(:ssh_port, 22), :forward_agent => true, :paranoid => true}
 
   default_run_options[:pty] = true
+
+  # set application folder
+  set(:deploy_to) { "/var/projects/#{application}/#{fetch(:stage)}" }
 
   before 'deploy:setup', 'deploy:prepare:database';
   after 'deploy:update', 'deploy:cleanup'
