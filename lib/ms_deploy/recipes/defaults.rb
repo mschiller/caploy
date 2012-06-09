@@ -4,6 +4,7 @@ Capistrano::Configuration.instance.load do
   abort "You must set :user before using defaults" unless fetch(:user, nil)
   abort "You must set :repository before using defaults" unless fetch(:repository, nil)
   abort "You must set :branch before using defaults" unless fetch(:branch, nil)
+  abort "You must set :deploy_to before using defaults" unless fetch(:deploy_to, nil)
 
   set :uptodate_scm, :git
   set :uptodate_branch, fetch(:branch)
