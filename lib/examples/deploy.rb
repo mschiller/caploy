@@ -4,6 +4,9 @@ set :domain, ''
 set :deploy_domain, ''
 set :vhost_domain, ''
 
+# set application folder
+set :deploy_to, "/var/projects/#{application}/xxx"
+
 set :rails_root, File.expand_path('../../', __FILE__)
 set :rails_env, :production # use 'stage' to differ between stage environments
 
