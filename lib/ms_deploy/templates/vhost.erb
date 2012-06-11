@@ -1,7 +1,7 @@
 
 <% if with_upstream_server %>
 
-upstream <%= application %>_<%= stage %>_server {
+upstream <%= application %>_<%= stage %>_<%= protocol %>_server {
   # fail_timeout=0 means we always retry an upstream even if it failed
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
@@ -22,10 +22,15 @@ server {
 
 <% if protocol == 'https' %>
 
-  listen 443 default_server ssl;
+  listen 443 ssl;
 
-  ssl_certificate      <%= nginx_cert_dir %>/<%= application %>_cert.pem;
-  ssl_certificate_key  <%= nginx_cert_dir %>/<%= application %>_cert.key;
+  ssl_certificate      <%= nginx_cert_dir %>/<%= application %>_cert.<%= cert_type %>;
+  ssl_certificate_key  <%= nginx_cert_dir %>/<%= application %>_cert.<%= key_type %>;
+
+  #ssl_ciphers               SSLv3+HIGH:RC4+MEDIUM:!aNULL:!eNULL:!3DES:!MD5:@STRENGTH;
+  #ssl_prefer_server_ciphers on;
+  #ssl_protocols             SSLv3;
+  #ssl_session_cache         shared:SSL:10m;
 
   keepalive_timeout    70;
 
@@ -101,7 +106,7 @@ server {
     # proxy_buffering off;
 
     if (!-f $request_filename) {
-      proxy_pass http://<%= application %>_<%= stage %>_server;
+      proxy_pass http://<%= application %>_<%= stage %>_<%= protocol %>_server;
       break;
     }
 
