@@ -105,6 +105,11 @@ server {
     # per-response basis.
     # proxy_buffering off;
 
+  <% if protocol == 'https' %>
+    # This makes sure that Rack::SslEnforcer knows it's being accessed over SSL.
+    proxy_set_header X-Forwarded-Proto https;
+  <% end %>
+
     if (!-f $request_filename) {
       proxy_pass http://<%= application %>_<%= stage %>_<%= protocol %>_server;
       break;
