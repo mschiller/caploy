@@ -15,11 +15,11 @@ Capistrano::Configuration.instance.load do
       end
 
       task :database do
-        _cset :db_admin_user, 'root'
-        _cset :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ")
-        _cset :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s
-        _cset :db_user_name, application
-        _cset :db_user_password, ''
+        set :db_admin_user, 'root'
+        set :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ")
+        set :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s
+        set :db_user_name, application
+        set :db_user_password, ''
 
         unless db_admin_password.to_s.empty?
           unless database_exits?
