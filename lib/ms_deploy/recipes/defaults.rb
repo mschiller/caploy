@@ -1,22 +1,22 @@
 Capistrano::Configuration.instance.load do
 
-  _cset :keep_releases, 10
-  _cset :use_sudo, false
+  set :keep_releases, 10
+  set :use_sudo, false
 
-  _cset :protocol, :both
+  set :protocol, :both
 
-  _cset :scm, :git
-  _cset :git_enable_submodules, true
+  set :scm, :git
+  set :git_enable_submodules, true
 
   # set deployment strategy
-  _cset :deploy_via, :remote_cache
-  _cset :copy_exclude, %w(.git .svn .DS_Store test doc .gitkeep)
+  set :deploy_via, :remote_cache
+  set :copy_exclude, %w(.git .svn .DS_Store test doc .gitkeep)
   #_cset :repository_cache, "cached-copy" # defaults to :shared_path + 'cached-copy/'
 
   # :forward_agent allows us to avoid using and distributing a deploy key.
   # On problems run 'ssh-add' locally
   # In your /etc/ssh/ssh_config or ~/.ssh/config you need to have ForwardAgent enabled for this to work.
-  _cset :ssh_options, {:port => fetch(:ssh_port, 22), :forward_agent => true, :paranoid => true}
+  set :ssh_options, {:port => fetch(:ssh_port, 22), :forward_agent => true, :paranoid => true}
 
   default_run_options[:pty] = true
 
@@ -54,7 +54,6 @@ Capistrano::Configuration.instance.load do
   end
 
   before 'deploy', 'test_and_prepare_cap_env'
-  before 'deploy:setup', 'deploy:prepare:database';
   after 'deploy:update', 'deploy:cleanup'
 
   desc "Show currently deployed revision on server."

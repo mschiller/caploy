@@ -11,7 +11,7 @@ Capistrano::Configuration.instance.load do
 
       desc "Set up shared directory structure"
       task :create_shared_folders do
-        shared_directories_to_create.each { |directory| run "mkdir -p #{directory}" }
+        directories_to_create.each { |directory| run "mkdir -p #{directory}" }
       end
 
       task :database do
@@ -31,8 +31,9 @@ Capistrano::Configuration.instance.load do
     end
   end
 
-  before :"deploy:setup", :"deploy:prepare:create_config_files";
-  before :"deploy:setup", :"deploy:prepare:create_shared_folders";
+  before 'deploy:setup', 'deploy:prepare:database';
+  before :'deploy:setup', :'deploy:prepare:create_config_files';
+  before :'deploy:setup', :'deploy:prepare:create_shared_folders';
 
 end
 
