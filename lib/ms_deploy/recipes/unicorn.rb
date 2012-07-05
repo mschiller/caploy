@@ -7,19 +7,20 @@ Capistrano::Configuration.instance.load do
   #require "capistrano-unicorn"
 
   namespace :deploy do
-    desc 'Start unicorn'
-    task :start, :roles => :app, :except => {:no_release => true} do
+    desc "Zero-downtime restart of Unicorn"
+    task :restart, :except => { :no_release => true } do
+      stop
+      start
+    end
+
+    desc "Start unicorn"
+    task :start, :except => { :no_release => true } do
       run "cd #{current_path} && #{try_sudo} #{unicorn_bin} -c #{current_path}/#{unicorn_config} -E #{rails_env} -D"
     end
 
-    desc 'Stop unicorn'
-    task :stop, :roles => :app, :except => {:no_release => true} do
-      run "if [ -f #{current_path}/#{unicorn_pid} ]; then #{try_sudo} kill -QUIT `cat #{current_path}/#{unicorn_pid}`; fi"
-    end
-
-    desc 'Restart unicorn'
-    task :restart, :roles => :app, :except => {:no_release => true} do
-      run "cd #{current_path} && #{try_sudo} kill -USR2 `cat #{current_path}/#{unicorn_pid}`"
+    desc "Stop unicorn"
+    task :stop, :except => { :no_release => true } do
+      run "kill -s QUIT `cat #{shared_path}/pids/unicorn.pid`;exit 0"
     end
   end
 end
