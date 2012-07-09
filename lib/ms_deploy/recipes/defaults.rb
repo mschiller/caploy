@@ -54,6 +54,7 @@ Capistrano::Configuration.instance.load do
   end
 
   before 'deploy', 'test_and_prepare_cap_env'
+  before 'deploy:migrations', 'test_and_prepare_cap_env'
   after 'deploy:update', 'deploy:cleanup'
 
   desc "Show currently deployed revision on server."
@@ -83,4 +84,5 @@ Capistrano::Configuration.instance.load do
   end
 
   after "deploy", "revisions"
+  after "deploy:migrations", "revisions"
 end
