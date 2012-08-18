@@ -47,21 +47,18 @@ server {
 
   client_max_body_size 4G;
 
+<% if serve_static_files %>
+
   # path for static files
   root <%= project_root %>/public;
-
-  ### Stop Image and Document Hijacking
-  #location ~* (\.jpg|\.png|\.css)$ {
-  #  if ($http_referer !~ ^(http://mydomain.com) ) {
-  #    return 405;
-  #  }
-  #}
 
 <% if with_file_expire_max %>
   location ~* \.(ico|css|js|gif|jpe?g|png)(\?[0-9]+)?$ {
     expires max;
     break;
   }
+<% end %>
+
 <% end %>
 
   <%= optional_http_content if protocol == 'http' %>

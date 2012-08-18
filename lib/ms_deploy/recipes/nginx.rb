@@ -43,7 +43,8 @@ Capistrano::Configuration.instance.load do
           'optional_http_content' => fetch(:optional_nginx_server_http_content, ''),
           'optional_https_content' => fetch(:optional_nginx_server_https_content, ''),
           'cert_type' => fetch(:cert_type, 'pem'),
-          'key_type' => fetch(:cert_type, 'key')
+          'key_type' => fetch(:cert_type, 'key'),
+          'serve_static_files' => fetch(:serve_static_files, true),
       }
 
       if protocol.nil? or protocol == 'http' or protocol == 'both'
