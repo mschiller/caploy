@@ -48,10 +48,6 @@ set(:files_to_link) {
   }
 }
 
-set(:config_file_to_setup) {
-  %W(config.#{stage}.yml unicorn.#{stage}.rb)
-}
-
 set(:files_to_delete) {
   %W()
 }

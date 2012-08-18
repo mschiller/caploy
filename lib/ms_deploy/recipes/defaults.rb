@@ -1,5 +1,7 @@
 Capistrano::Configuration.instance.load do
 
+  require File.expand_path("#{File.dirname(__FILE__)}/../../util")
+
   set :keep_releases, 10
   set :use_sudo, false
 
@@ -20,8 +22,10 @@ Capistrano::Configuration.instance.load do
 
   default_run_options[:pty] = true
 
+  # if you want to remove the dump file after loading
+  set :db_local_clean, true
+
   task :test_and_prepare_cap_env do
-    abort "You must run this using 'bundle exec ...'" unless ENV['BUNDLE_BIN_PATH'] || ENV['BUNDLE_GEMFILE']
     abort "You must set :user before using defaults" unless fetch(:user, nil)
     abort "You must set :repository before using defaults" unless fetch(:repository, nil)
     abort "You must set :branch before using defaults" unless fetch(:branch, nil)

@@ -1,25 +1,33 @@
 Capistrano::Configuration.instance.load do
 
-  set :unicorn_bin, "bundle exec unicorn"
-  set :unicorn_pid, "tmp/pids/unicorn.pid"
-  #require "capistrano-unicorn"
+  _cset :unicorn_bin, "bundle exec unicorn"
+  _cset :unicorn_pid, "#{deploy_to}/current/tmp/pids/unicorn.pid"
+  _cset :unicorn_std_log, "log/unicorn.stderr.log"
+  _cset :unicorn_err_log, "log/unicorn.stderr.log"
+  _cset :unicorn_worker_processes, 2
+  _cset :unicorn_listen_backlog, 2048
 
-  namespace :deploy do
-    desc "Zero-downtime restart of Unicorn"
-    task :restart, :except => { :no_release => true } do
-      stop
-      start
-    end
+  require "capistrano-unicorn"
 
-    desc "Start unicorn"
-    task :start, :except => { :no_release => true } do
-      set :unicorn_config, "config/unicorn.#{fetch(:stage, 'production')}.rb"
-      run "cd #{current_path} && #{try_sudo} #{unicorn_bin} -c #{current_path}/#{unicorn_config} -E #{rails_env} -D"
-    end
-
-    desc "Stop unicorn"
-    task :stop, :except => { :no_release => true } do
-      run "kill -s QUIT `cat #{shared_path}/pids/unicorn.pid`;exit 0"
+  namespace :unicorn do
+    desc "Setup unicorn"
+    task :setup, :except => { :no_release => true } do
+    run "mkdir -p \"#{shared_path}/config/unicorn\""
+      config_path = "#{shared_path}/config/unicorn/#{stage}.rb"
+      template_path = File.expand_path('../../templates/unicorn/unicorn.rb.erb', __FILE__)
+      vars = {
+          'application'=> application,
+          'current_path' => current_path,
+          'unicorn_pid' => unicorn_pid,
+          'unicorn_std_log' => unicorn_std_log,
+          'unicorn_err_log' => unicorn_err_log,
+          'stage' => stage,
+          'unicorn_listen_backlog' => unicorn_listen_backlog,
+          'unicorn_worker_processes' => unicorn_worker_processes
+      }
+      put(render_erb_template(template_path, vars), config_path)
     end
   end
+
+  after :"deploy:setup", :"unicorn:setup";
 end
