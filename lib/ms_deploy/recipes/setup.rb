@@ -2,7 +2,7 @@ Capistrano::Configuration.instance.load do
 
   namespace :deploy do
     namespace :prepare do
-      task :create_config_files do
+      task :create_config_files, :roles => :app do
         run "mkdir -p #{shared_path}/config/"
         config_file_to_setup.each do |config_file|
           put(File.read(config_file_path(config_file)), "#{shared_path}/config/#{config_file}", :via => :scp)
@@ -10,11 +10,11 @@ Capistrano::Configuration.instance.load do
       end
 
       desc "Set up shared directory structure"
-      task :create_shared_folders do
+      task :create_shared_folders, :roles => :app do
         directories_to_create.each { |directory| run "mkdir -p #{directory}" }
       end
 
-      task :database do
+      task :database, :roles => :db do
         _cset :db_admin_user, 'root'
         _cset :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ")
         _cset :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s

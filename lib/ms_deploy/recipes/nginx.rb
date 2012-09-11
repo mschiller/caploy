@@ -27,7 +27,7 @@ Capistrano::Configuration.instance.load do
       run "sudo /etc/init.d/nginx restart"
     end
 
-    task :setup do
+    task :setup, :roles => :web do
       protocol = fetch(:protocol, nil).to_s
       template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
       vars = {
@@ -50,32 +50,61 @@ Capistrano::Configuration.instance.load do
       if protocol.nil? or protocol == 'http' or protocol == 'both'
         config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
-        put(render_erb_template(template_path, vars), config_path)
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
-        sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
-      end
-      if protocol == 'https' or protocol == 'both'
-        vars.merge!({'protocol' => 'https'})
+        sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
 
-        config_path = "#{shared_path}/config/#{application}_ssl_vhost.conf"
+        if protocol.nil? or protocol == 'http' or protocol == 'both'
+          config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
-        put(render_erb_template(template_path, vars), config_path)
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
-        sudo "ln -s #{config_path} /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
+          put(render_erb_template(template_path, vars), config_path)
+
+          with_user(fetch(:setup_user, user)) do
+            try_sudo "rm -f #{sites_path}/#{application}_#{stage}.conf"
+            try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}.conf"
+          end
+        end
+        if protocol == 'https' or protocol == 'both'
+          vars.merge!({'protocol' => 'https'})
+
+          config_path = "#{shared_path}/config/#{application}_ssl_vhost.conf"
+
+          put(render_erb_template(template_path, vars), config_path)
+
+          with_user(fetch(:setup_user, user)) do
+            try_sudo "rm -f #{sites_path}/#{application}_#{stage}_ssl.conf"
+            try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}_ssl.conf"
+          end
+        end
       end
     end
 
     task :uninstall do
       protocol = fetch(:protocol, nil)
+      sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
 
-      if protocol.blank? or protocol == 'http' or protocol == 'both'
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}.conf"
-      elsif protocol == 'https' or protocol == 'both'
-        sudo "rm -f /etc/nginx/sites-enabled/#{application}_#{stage}_ssl.conf"
+      with_user(fetch(:setup_user, user)) do
+        if protocol.blank? or protocol == 'http' or protocol == 'both'
+          try_sudo "rm -f #{sites_path}/#{application}_#{stage}.conf"
+        elsif protocol == 'https' or protocol == 'both'
+          try_sudo "rm -f #{sites_path}/#{application}_#{stage}_ssl.conf"
+        end
       end
     end
   end
 
   after :"deploy:setup", :"nginx:setup";
+
+  def with_user(new_user, &block)
+    old_user = user
+    set :user, new_user
+    close_sessions
+    yield
+    set :user, old_user
+    close_sessions
+  end
+
+  def close_sessions
+    sessions.values.each { |session| session.close }
+    sessions.clear
+  end
 
 end

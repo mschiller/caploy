@@ -11,7 +11,7 @@ Capistrano::Configuration.instance.load do
 
   namespace :unicorn do
     desc "Setup unicorn"
-    task :setup, :except => { :no_release => true } do
+    task :setup, :roles => :app, :except => { :no_release => true } do
     run "mkdir -p \"#{shared_path}/config/unicorn\""
       config_path = "#{shared_path}/config/unicorn/#{stage}.rb"
       template_path = File.expand_path('../../templates/unicorn/unicorn.rb.erb', __FILE__)
@@ -30,4 +30,14 @@ Capistrano::Configuration.instance.load do
   end
 
   after :"deploy:setup", :"unicorn:setup";
+
+  namespace :deploy do
+    task :start, :roles => :app do
+      unicorn.start
+    end
+
+    task :stop, :roles => :app do
+      unicorn.stop
+    end
+  end
 end
