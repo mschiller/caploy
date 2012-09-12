@@ -42,6 +42,8 @@ Capistrano::Configuration.instance.load do
           'with_file_expire_max' => fetch(:with_file_expire_max, true),
           'optional_http_content' => fetch(:optional_nginx_server_http_content, ''),
           'optional_https_content' => fetch(:optional_nginx_server_https_content, ''),
+          'optional_nginx_http_content' => fetch(:optional_nginx_http_content, ''),
+          'optional_nginx_https_content' => fetch(:optional_nginx_https_content, ''),
           'cert_type' => fetch(:cert_type, 'pem'),
           'key_type' => fetch(:cert_type, 'key'),
           'serve_static_files' => fetch(:serve_static_files, true),

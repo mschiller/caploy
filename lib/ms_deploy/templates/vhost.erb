@@ -16,6 +16,9 @@ upstream <%= application %>_<%= stage %>_<%= protocol %>_server {
 }
 <% end %>
 
+<%= optional_nginx_http_content if protocol == 'http' %>
+<%= optional_nginx_https_content if protocol == 'https' %>
+
 server {
 
   server_name <%= domain %>;
