@@ -49,32 +49,28 @@ Capistrano::Configuration.instance.load do
           'serve_static_files' => fetch(:serve_static_files, true),
       }
 
+      sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
+
       if protocol.nil? or protocol == 'http' or protocol == 'both'
         config_path = "#{shared_path}/config/#{application}_vhost.conf"
 
-        sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
+        put(render_erb_template(template_path, vars), config_path)
 
-        if protocol.nil? or protocol == 'http' or protocol == 'both'
-          config_path = "#{shared_path}/config/#{application}_vhost.conf"
-
-          put(render_erb_template(template_path, vars), config_path)
-
-          with_user(fetch(:setup_user, user)) do
-            try_sudo "rm -f #{sites_path}/#{application}_#{stage}.conf"
-            try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}.conf"
-          end
+        with_user(fetch(:setup_user, user)) do
+          try_sudo "rm -f #{sites_path}/#{application}_#{stage}.conf"
+          try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}.conf"
         end
-        if protocol == 'https' or protocol == 'both'
-          vars.merge!({'protocol' => 'https'})
+      end
+      if protocol == 'https' or protocol == 'both'
+        vars.merge!({'protocol' => 'https'})
 
-          config_path = "#{shared_path}/config/#{application}_ssl_vhost.conf"
+        config_path = "#{shared_path}/config/#{application}_ssl_vhost.conf"
 
-          put(render_erb_template(template_path, vars), config_path)
+        put(render_erb_template(template_path, vars), config_path)
 
-          with_user(fetch(:setup_user, user)) do
-            try_sudo "rm -f #{sites_path}/#{application}_#{stage}_ssl.conf"
-            try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}_ssl.conf"
-          end
+        with_user(fetch(:setup_user, user)) do
+          try_sudo "rm -f #{sites_path}/#{application}_#{stage}_ssl.conf"
+          try_sudo "ln -s #{config_path} #{sites_path}/#{application}_#{stage}_ssl.conf"
         end
       end
     end
