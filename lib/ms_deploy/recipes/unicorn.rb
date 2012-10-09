@@ -13,7 +13,7 @@ Capistrano::Configuration.instance.load do
     desc "Setup unicorn"
     task :setup, :roles => :app, :except => { :no_release => true } do
     run "mkdir -p \"#{shared_path}/config/unicorn\""
-      config_path = "#{shared_path}/config/unicorn/#{stage}.rb"
+      config_path = "#{shared_path}/config/unicorn/#{rails_env}.rb"
       template_path = File.expand_path('../../templates/unicorn/unicorn.rb.erb', __FILE__)
       vars = {
           'application'=> application,
