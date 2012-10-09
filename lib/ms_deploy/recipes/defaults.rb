@@ -55,6 +55,7 @@ Capistrano::Configuration.instance.load do
     # $ cap staging deploy -S skip_dump=true
 
     set :group, user
+    set :admin_runner, user
   end
 
   before 'deploy', 'test_and_prepare_cap_env'
