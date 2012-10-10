@@ -8,7 +8,7 @@ Capistrano::Configuration.instance.load do
   set :protocol, :both
 
   set :scm, :git
-  set :git_enable_submodules, true
+  set :git_enable_submodules, false
 
   # set deployment strategy
   set :deploy_via, :remote_cache
@@ -53,9 +53,6 @@ Capistrano::Configuration.instance.load do
     #Dynamically skip Capistrano hooks example
     # before 'deploy:update_code', 'db:dump' unless fetch(:skip_dump, false)
     # $ cap staging deploy -S skip_dump=true
-
-    set :group, user
-    set :admin_runner, user
   end
 
   before 'deploy', 'test_and_prepare_cap_env'
@@ -67,7 +64,7 @@ Capistrano::Configuration.instance.load do
     current, previous, latest = current_revision[0, 7], previous_revision[0, 7], real_revision[0, 7]
     puts "\n" << "-"*63
     puts "===== Master Revision: \033[1;33m#{latest}\033[0m\n\n"
-    puts "===== [ \033[1;36m#{application.capitalize} - #{stage.capitalize}\033[0m ]"
+    puts "===== [ \033[1;36m#{application.capitalize} - #{stage.to_s.capitalize}\033[0m ]"
     puts "=== Deployed Revision: \033[1;32m#{current}\033[0m"
     puts "=== Previous Revision: \033[1;32m#{previous}\033[0m\n\n"
 

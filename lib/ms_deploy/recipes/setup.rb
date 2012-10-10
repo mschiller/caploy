@@ -14,6 +14,10 @@ Capistrano::Configuration.instance.load do
         directories_to_create.each { |directory| run "mkdir -p #{directory}" }
       end
 
+      task :set_permissions, :roles => :app do
+        try_sudo "chown -R #{user}:#{fetch(:group, user)} #{deploy_to}" if fetch(:use_sudo, false)
+      end
+
       task :database, :roles => :db do
         _cset :db_admin_user, 'root'
         _cset :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ")
@@ -34,6 +38,7 @@ Capistrano::Configuration.instance.load do
   before 'deploy:setup', 'deploy:prepare:database';
   before :'deploy:setup', :'deploy:prepare:create_config_files';
   before :'deploy:setup', :'deploy:prepare:create_shared_folders';
+  after 'deploy:setup', 'deploy:prepare:set_permissions';
 
 end
 
