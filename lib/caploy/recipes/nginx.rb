@@ -1,4 +1,4 @@
-require "ms_deploy/render"
+require "caploy/render"
 
 Capistrano::Configuration.instance.load do
 
