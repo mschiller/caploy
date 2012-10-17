@@ -29,7 +29,7 @@ Capistrano::Configuration.instance.load do
 
     task :setup, :roles => :web do
       protocol = fetch(:protocol, nil).to_s
-      template_path = File.expand_path('../../templates/vhost.erb', __FILE__)
+      template_path = File.expand_path('../../templates/nginx/vhost.erb', __FILE__)
       vars = {
           'application' => application,
           'project_root' => deploy_to + '/current',

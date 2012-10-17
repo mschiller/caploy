@@ -58,16 +58,16 @@ set(:chmods_to_set) {
   }
 }
 
-require 'ms_deploy/recipes/defaults'
+require 'caploy/recipes/defaults'
 
-require 'ms_deploy/recipes/rbenv'
-require 'ms_deploy/recipes/assets'
-require 'ms_deploy/recipes/nginx'
-require 'ms_deploy/recipes/bundler'
-require 'ms_deploy/recipes/symlink'
-require 'ms_deploy/recipes/unicorn'
-require 'ms_deploy/recipes/setup'
-require 'ms_deploy/recipes/monitoring'
-require 'ms_deploy/recipes/seeding'
-#require 'ms_deploy/recipes/paperclip'
-#require 'ms_deploy/recipes/airbrake'
+require 'caploy/recipes/rbenv'
+require 'caploy/recipes/assets'
+require 'caploy/recipes/nginx'
+require 'caploy/recipes/bundler'
+require 'caploy/recipes/symlink'
+require 'caploy/recipes/unicorn'
+require 'caploy/recipes/setup'
+require 'caploy/recipes/monitoring'
+require 'caploy/recipes/seeding'
+#require 'caploy/recipes/paperclip'
+#require 'caploy/recipes/airbrake'

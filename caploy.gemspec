@@ -6,12 +6,12 @@ Gem::Specification.new do |gem|
   gem.email         = ["michael.schiller@gmx.de"]
   gem.description   = %q{capistrano deployment task for my projects}
   gem.summary       = %q{capistrano deployment task for my projects}
-  gem.homepage      = "https://github.com/mschiller/ms_deploy"
+  gem.homepage      = "https://github.com/mschiller/caploy"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  gem.name          = "ms_deploy"
+  gem.name          = "caploy"
   gem.require_paths = ["lib"]
 
   gem.add_dependency('gemcutter')
@@ -25,5 +25,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency('rvm-capistrano', '>= 1.2.2')
   gem.add_dependency('erubis')
 
-  gem.version       = MsDeploy::VERSION
+  gem.version       = Caploy::VERSION
 end
