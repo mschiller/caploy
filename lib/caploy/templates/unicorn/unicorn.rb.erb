@@ -31,4 +31,10 @@ after_fork do |server, worker|
     if defined?(ActiveRecord::Base)
         ActiveRecord::Base.establish_connection
     end
+
+    if defined?(Sidekiq)
+      Sidekiq.configure_client do |config|
+        config.redis = { :size => <%= sidekiq_redis_count %> }
+      end
+    end
 end

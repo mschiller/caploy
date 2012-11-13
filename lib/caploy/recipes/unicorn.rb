@@ -6,6 +6,7 @@ Capistrano::Configuration.instance.load do
   _cset :unicorn_err_log, "log/unicorn.stderr.log"
   _cset :unicorn_worker_processes, 2
   _cset :unicorn_listen_backlog, 2048
+  _cset :sidekiq_redis_count, 1
 
   require "capistrano-unicorn"
 
@@ -23,7 +24,8 @@ Capistrano::Configuration.instance.load do
           'unicorn_err_log' => unicorn_err_log,
           'stage' => stage,
           'unicorn_listen_backlog' => unicorn_listen_backlog,
-          'unicorn_worker_processes' => unicorn_worker_processes
+          'unicorn_worker_processes' => unicorn_worker_processes,
+          'sidekiq_redis_count' => sidekiq_redis_count
       }
       put(render_erb_template(template_path, vars), config_path)
     end
