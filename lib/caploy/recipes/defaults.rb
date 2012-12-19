@@ -73,18 +73,26 @@ Capistrano::Configuration.instance.load do
          ["deployed", "master", current, latest] : \
          ["previous", "deployed", previous, current]
 
+    # Fetch the difference between master and deployed revisions.
+    log_cmd = "#{source.log(previous, latest).gsub(/^git/, 'git --no-pager')} --oneline"
+    cfg = File.join(shared_path, strategy.configuration[:repository_cache] || "cached-copy")
+
+    diff = ''
+    run %Q{cd "#{cfg}" && #{log_cmd}} do |channel, stream, data|
+      diff = data
+    end
+
     # Show difference between master and deployed revisions.
-    if (diff = `git log #{base_rev}..#{new_rev} --oneline`) != ""
+    if diff != ""
       # Colorize refs
       diff.gsub!(/^([a-f0-9]+) /, "\033[1;32m\\1\033[0m - ")
       diff = "    " << diff.gsub("\n", "\n    ") << "\n"
       # Indent commit messages nicely, max 80 chars per line, line has to end with space.
-      diff = diff.split("\n").map { |l| l.scan(/.{1,120}/).join("\n"<<" "*14).gsub(/([^ ]*)\n {14}/m, "\n"<<" "*14<<"\\1") }.join("\n")
+      diff = diff.split("\n").map { |l| l.scan(/.{1,80}/).join("\n"<<" "*14).gsub(/([^ ]*)\n {14}/m, "\n"<<" "*14<<"\\1") }.join("\n")
       puts "=== Difference between #{base_label} revision and #{new_label} revision:\n\n"
       puts diff
     end
   end
-
   after "deploy", "revisions"
   after "deploy:migrations", "revisions"
 end
