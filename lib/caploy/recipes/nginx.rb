@@ -28,7 +28,7 @@ Capistrano::Configuration.instance.load do
     end
 
     task :setup, :roles => :web do
-      protocol = fetch(:protocol, nil).to_s
+      protocol = fetch(:nginx_protocol, nil).to_s
       template_path = File.expand_path('../../templates/nginx/vhost.erb', __FILE__)
       vars = {
           'application' => application,
@@ -46,7 +46,8 @@ Capistrano::Configuration.instance.load do
           'optional_nginx_https_content' => fetch(:optional_nginx_https_content, ''),
           'cert_type' => fetch(:cert_type, 'pem'),
           'key_type' => fetch(:cert_type, 'key'),
-          'serve_static_files' => fetch(:serve_static_files, true),
+          'serve_static_files' => fetch(:nginx_serve_static_files, true),
+          'new_relic_support' => fetch(:nginx_new_relic_support, false)
       }
 
       sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
@@ -76,7 +77,7 @@ Capistrano::Configuration.instance.load do
     end
 
     task :uninstall do
-      protocol = fetch(:protocol, nil)
+      protocol = fetch(:nginx_protocol, nil)
       sites_path = fetch(:nginx_sites_enabled_path, "/etc/nginx/sites-enabled")
 
       with_user(fetch(:setup_user, user)) do
