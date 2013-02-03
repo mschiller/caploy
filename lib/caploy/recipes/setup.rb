@@ -5,7 +5,8 @@ Capistrano::Configuration.instance.load do
       task :create_config_files, :roles => :app do
         run "mkdir -p #{shared_path}/config/"
         config_file_to_setup.each do |config_file|
-          put(File.read(config_file_path(config_file)), "#{shared_path}/config/#{config_file}", :via => :scp)
+          local_path = config_file_path(config_file)
+          put(File.read(local_path), "#{shared_path}/config/#{config_file}", :via => :scp) if local_path
         end
       end
 
@@ -20,7 +21,7 @@ Capistrano::Configuration.instance.load do
 
       task :database, :roles => :db do
         _cset :db_admin_user, 'root'
-        _cset :db_admin_password, Capistrano::CLI.password_prompt("Type your mysql password for user '#{db_admin_user}' (not set if empty): ")
+        _cset :db_admin_password, Capistrano::CLI.password_prompt("\e[0;31mType your mysql password for user '#{db_admin_user}' (not set if empty and ENTER): ")
         _cset :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s
         _cset :db_user_name, application
         _cset :db_user_password, ''
@@ -44,8 +45,12 @@ end
 
 def config_file_path(config_file_name)
   config_file = "#{rails_root}/config/#{config_file_name}"
-  raise "No config file '#{config_file}'" unless File.exists? config_file
-  config_file
+  if File.exists? config_file
+    config_file
+  else
+    puts "\e[0;31mNo config file '#{config_file}'"
+    nil
+  end
 end
 
 def database_exits?

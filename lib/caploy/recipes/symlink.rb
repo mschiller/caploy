@@ -4,7 +4,7 @@ Capistrano::Configuration.instance.load do
     desc <<-DESC
       Symlink shared directories and files.
     DESC
-    task :symlink_dependencies, :roles => :web, :except => {:no_release => true} do
+    task :symlink_dependencies, :roles => :app, :except => {:no_release => true} do
       shared_directories_to_link   = fetch(:shared_directories_to_link, [])
       directories_to_create        = fetch(:directories_to_create, [])
       files_to_delete              = fetch(:files_to_delete, [])

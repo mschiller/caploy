@@ -5,7 +5,7 @@ Capistrano::Configuration.instance.load do
   set :keep_releases, 10
   set :use_sudo, false
 
-  set :protocol, :both
+  set :nginx_protocol, :both
 
   set :scm, :git
   set :git_enable_submodules, false
@@ -24,6 +24,35 @@ Capistrano::Configuration.instance.load do
 
   # if you want to remove the dump file after loading
   set :db_local_clean, true
+
+  namespace :deploy do
+    desc "deploy always with migrations"
+    task :default do
+      deploy.migrations
+    end
+
+    namespace :cache do
+      desc "Flush cache"
+      task :clear, :roles => :app do
+        run "cd #{current_path} && #{rake} cache:clear  RAILS_ENV=#{stage}"
+      end
+    end
+
+    task :set_branch_info_file, :roles => :app do
+      run "cd #{release_path} && echo \"#{branch}\" > CURRENT_BRANCH"
+    end
+
+    desc "build missing paperclip styles"
+    task :build_missing_paperclip_styles, :roles => :app do
+      run "cd #{current_path}; RAILS_ENV=#{rails_env} bundle exec rake paperclip:refresh:missing_styles"
+    end
+
+    desc 'Show deployed revision'
+    task :revision, :roles => :app do
+      run "cat #{current_path}/REVISION"
+    end
+
+  end
 
   task :test_and_prepare_cap_env do
     abort "You must set :user before using defaults" unless fetch(:user, nil)
