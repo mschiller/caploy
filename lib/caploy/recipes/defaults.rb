@@ -33,7 +33,7 @@ Capistrano::Configuration.instance.load do
 
     namespace :cache do
       desc "Flush cache"
-      task :clear, :roles => :app do
+      task :clear, :roles => :cache do
         run "cd #{current_path} && #{rake} cache:clear  RAILS_ENV=#{stage}"
       end
     end
