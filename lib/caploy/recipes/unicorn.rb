@@ -118,7 +118,8 @@ module Unicorn
                 'stage' => stage,
                 'unicorn_listen_backlog' => unicorn_listen_backlog,
                 'unicorn_worker_processes' => unicorn_worker_processes,
-                'sidekiq_redis_count' => sidekiq_redis_count
+                'sidekiq_redis_count' => sidekiq_redis_count,
+                'sidekiq_redis_url' => sidekiq_redis_url
             }
             put(render_erb_template(template_path, vars), config_path)
           end
