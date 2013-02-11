@@ -39,7 +39,7 @@ after_fork do |server, worker|
     if defined?(Sidekiq)
       Sidekiq.configure_client do |config|
         <% if sidekiq_redis_url %>
-        config.redis = { :url => <%= sidekiq_redis_url %>, :size => <%= sidekiq_redis_count %> }
+        config.redis = { :url => '<%= sidekiq_redis_url %>', :size => <%= sidekiq_redis_count %> }
         <% else %>
         config.redis = { :size => <%= sidekiq_redis_count %> }
         <% end %>
