@@ -42,6 +42,10 @@ Capistrano::Configuration.instance.load do
       run "cd #{release_path} && echo \"#{branch}\" > CURRENT_BRANCH"
     end
 
+    task :set_staging_release_test_info_file, :roles => :app do
+      run "cd #{release_path} && echo \"#{branch}\" > RELEASE_TEST" if branch == 'master' and ENV['RELEASE_TEST']
+    end
+
     desc "build missing paperclip styles"
     task :build_missing_paperclip_styles, :roles => :app do
       run "cd #{current_path}; RAILS_ENV=#{rails_env} bundle exec rake paperclip:refresh:missing_styles"
@@ -52,6 +56,7 @@ Capistrano::Configuration.instance.load do
       run "cat #{current_path}/REVISION"
     end
 
+    after 'deploy:finalize_update', 'deploy:set_branch_info_file'
   end
 
   task :test_and_prepare_cap_env do
