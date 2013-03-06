@@ -27,6 +27,7 @@ module Unicorn
         _cset :unicorn_std_log, "log/unicorn.stderr.log"
         _cset :unicorn_err_log, "log/unicorn.stderr.log"
         _cset :unicorn_worker_processes, 2
+        _cset :unicorn_timeout, 30
         _cset :unicorn_listen_backlog, 2048
         _cset :sidekiq_redis_count, 1
         _cset :unicorn_hard_restart, false
@@ -118,6 +119,7 @@ module Unicorn
                 'stage' => stage,
                 'unicorn_listen_backlog' => unicorn_listen_backlog,
                 'unicorn_worker_processes' => unicorn_worker_processes,
+                'unicorn_timeout' => unicorn_timeout,
                 'sidekiq_redis_count' => sidekiq_redis_count,
                 'sidekiq_redis_url' => sidekiq_redis_url
             }

@@ -5,7 +5,7 @@ stdout_path "<%= unicorn_err_log %>"
 
 listen "/tmp/socket.<%= application %>_<%= stage %>.sock", :backlog => <%= unicorn_listen_backlog %>
 worker_processes <%= unicorn_worker_processes %>
-timeout 30
+timeout <%= unicorn_timeout %>
 
 preload_app true
 
