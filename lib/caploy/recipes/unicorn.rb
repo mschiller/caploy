@@ -30,6 +30,7 @@ module Unicorn
         _cset :unicorn_timeout, 30
         _cset :unicorn_listen_backlog, 2048
         _cset :sidekiq_redis_count, 1
+        _cset :sidekiq_redis_url, nil
         _cset :unicorn_hard_restart, false
 
         namespace :unicorn do
