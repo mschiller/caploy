@@ -21,6 +21,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency('capistrano_colors', '>= 0.5.5')
   gem.add_dependency('capistrano-file_db', '>= 0.1.0')
   gem.add_dependency('capistrano-uptodate', '>= 0.0.2')
+  gem.add_dependency('capistrano-multiconfig', '>= 0.0.4')
+  gem.add_dependency('capistrano-patch', '>= 0.0.2')
+  gem.add_dependency('capistrano-calendar', '>= 0.1.2')
   gem.add_dependency('rvm-capistrano', '>= 1.2.2')
   gem.add_dependency('erubis')
 

@@ -14,17 +14,17 @@ Capistrano::Configuration.instance.load do
 
   # Set unicorn vars
   #
-  _cset :app_env, fetch(:rails_env, 'production')
-  _cset :unicorn_bin, "unicorn"
-  _cset :unicorn_pid, "#{fetch(:current_path)}/tmp/pids/unicorn.pid"
-  _cset :unicorn_env, app_env
-  _cset :unicorn_std_log, "log/unicorn.stderr.log"
-  _cset :unicorn_err_log, "log/unicorn.stderr.log"
-  _cset :unicorn_worker_processes, 2
-  _cset :unicorn_timeout, 30
-  _cset :unicorn_listen_backlog, 2048
-  _cset :sidekiq_redis_url, nil
-  _cset :unicorn_hard_restart, false
+  _cset (:app_env) { fetch(:rails_env, 'production') }
+  _cset (:unicorn_bin) { "unicorn" }
+  _cset (:unicorn_pid) { "#{fetch(:current_path)}/tmp/pids/unicorn.pid" }
+  _cset (:unicorn_env) { app_env }
+  _cset (:unicorn_std_log) { "log/unicorn.stderr.log" }
+  _cset (:unicorn_err_log) { "log/unicorn.stderr.log" }
+  _cset (:unicorn_worker_processes) { 2 }
+  _cset (:unicorn_timeout) { 30 }
+  _cset (:unicorn_listen_backlog) { 2048 }
+  _cset (:sidekiq_redis_url) { nil }
+  _cset (:unicorn_hard_restart) { false }
 
   namespace :unicorn do
     desc 'Start Unicorn'
