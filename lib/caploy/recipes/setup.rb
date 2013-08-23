@@ -7,12 +7,12 @@ Capistrano::Configuration.instance.load do
         config_file_to_setup.each do |config_file|
           local_path = config_file_path(config_file)
           put(File.read(local_path), "#{shared_path}/config/#{config_file}", :via => :scp) if local_path
-        end
+        end if defined?(config_file_to_setup)
       end
 
       desc "Set up shared directory structure"
       task :create_shared_folders, :roles => :app do
-        directories_to_create.each { |directory| run "mkdir -p #{directory}" }
+        directories_to_create.each { |directory| run "mkdir -p #{directory}" } if defined?(directories_to_create)
       end
 
       task :set_permissions, :roles => :app do
