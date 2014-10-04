@@ -1,9 +1,0 @@
-description "<%= application %>"
-
-start on runlevel [2]
-stop on runlevel [016]
-
-expect daemon
-exec bluepill load <%= config_path %>
-
-respawn

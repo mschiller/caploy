@@ -1,47 +1,43 @@
-Capistrano::Configuration.instance.load do
+namespace :deploy do
+  namespace :prepare do
+    task :create_config_files, :roles => :app do
+      run "mkdir -p #{shared_path}/config/"
+      config_file_to_setup.each do |config_file|
+        local_path = config_file_path(config_file)
+        put(File.read(local_path), "#{shared_path}/config/#{config_file}", :via => :scp) if local_path
+      end if defined?(config_file_to_setup)
+    end
 
-  namespace :deploy do
-    namespace :prepare do
-      task :create_config_files, :roles => :app do
-        run "mkdir -p #{shared_path}/config/"
-        config_file_to_setup.each do |config_file|
-          local_path = config_file_path(config_file)
-          put(File.read(local_path), "#{shared_path}/config/#{config_file}", :via => :scp) if local_path
-        end if defined?(config_file_to_setup)
-      end
+    desc "Set up shared directory structure"
+    task :create_shared_folders, :roles => :app do
+      directories_to_create.each { |directory| run "mkdir -p #{directory}" } if defined?(directories_to_create)
+    end
 
-      desc "Set up shared directory structure"
-      task :create_shared_folders, :roles => :app do
-        directories_to_create.each { |directory| run "mkdir -p #{directory}" } if defined?(directories_to_create)
-      end
+    task :set_permissions, :roles => :app do
+      try_sudo "chown -R #{user}:#{fetch(:group, user)} #{deploy_to}" if fetch(:use_sudo, false)
+    end
 
-      task :set_permissions, :roles => :app do
-        try_sudo "chown -R #{user}:#{fetch(:group, user)} #{deploy_to}" if fetch(:use_sudo, false)
-      end
+    task :database, :roles => :db do
+      _cset :db_admin_user, 'root'
+      _cset :db_admin_password, Capistrano::CLI.password_prompt("\e[0;31mType your mysql password for user '#{db_admin_user}' (not set if empty and ENTER): ")
+      _cset :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s
+      _cset :db_user_name, application
+      _cset :db_user_password, ''
 
-      task :database, :roles => :db do
-        _cset :db_admin_user, 'root'
-        _cset :db_admin_password, Capistrano::CLI.password_prompt("\e[0;31mType your mysql password for user '#{db_admin_user}' (not set if empty and ENTER): ")
-        _cset :db_name, application.gsub(/\W+/, '')[0..5] + '_' + rails_env.to_s
-        _cset :db_user_name, application
-        _cset :db_user_password, ''
-
-        unless db_admin_password.to_s.empty?
-          unless database_exits?
-            create_database
-          end
-          setup_database_permissions
+      unless db_admin_password.to_s.empty?
+        unless database_exits?
+          create_database
         end
+        setup_database_permissions
       end
     end
   end
-
-  before 'deploy:setup', 'deploy:prepare:database';
-  before :'deploy:setup', :'deploy:prepare:create_config_files';
-  before :'deploy:setup', :'deploy:prepare:create_shared_folders';
-  after 'deploy:setup', 'deploy:prepare:set_permissions';
-
 end
+
+before 'deploy:setup', 'deploy:prepare:database';
+before :'deploy:setup', :'deploy:prepare:create_config_files';
+before :'deploy:setup', :'deploy:prepare:create_shared_folders';
+after 'deploy:setup', 'deploy:prepare:set_permissions';
 
 def config_file_path(config_file_name)
   config_file = "#{rails_root}/config/#{config_file_name}"
