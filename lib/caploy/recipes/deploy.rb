@@ -73,6 +73,8 @@
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
+set :rake, "#{fetch(:rbenv_prefix)} bundle exec rake"
+
 namespace :deploy do
   task :restart do
     invoke 'unicorn:restart'
@@ -80,8 +82,16 @@ namespace :deploy do
 
   desc 'build missing paperclip styles'
   task :build_missing_paperclip_styles do # app
-    run "cd #{current_path}; RAILS_ENV=#{rails_env} #{rake} paperclip:refresh:missing_styles"
+    run "cd #{current_path}; RAILS_ENV=#{rails_env} #{fetch(:rake)} paperclip:refresh:missing_styles"
   end
+
+  desc 'generate nondigest assets after default precompiling'
+  task :compile_nondigest_assets do
+    on roles(:app) do
+      execute "cd #{current_path}; RAILS_ENV=#{fetch(:rails_env)} #{fetch(:rake)} assets:precompile:nondigest"
+    end
+  end
+  after 'deploy:compile_assets', 'deploy:compile_nondigest_assets'
 
   desc "checks whether the currently checkout out revision matches the
   remote one we're trying to deploy from"
@@ -115,8 +125,8 @@ namespace :deploy do
   desc 'Run the full tests on the deployed app. To deploy without tests, try cap deploy:without_tests or cap -S run_tests=0 deploy'
   task :run_tests do
     unless fetch(:run_tests, '1') == '0'
-      run "cd #{release_path} && rake db:test:prepare"
-      run "cd #{release_path} && nice -n 10 rake RAILS_ENV=production test"
+      run "cd #{release_path} && #{fetch(:rake)} db:test:prepare"
+      run "cd #{release_path} && nice -n 10 #{fetch(:rake)} RAILS_ENV=production test"
     end
   end
 
@@ -136,7 +146,7 @@ namespace :deploy do
     desc "Flush cache"
     task :clear do
       on roles(:app) do
-        run "cd #{current_path} && #{rake} cache:clear RAILS_ENV=#{rails_env}"
+        run "cd #{current_path} && #{fetch(:rake)} cache:clear RAILS_ENV=#{rails_env}"
       end
     end
   end
