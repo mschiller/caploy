@@ -88,7 +88,7 @@ namespace :deploy do
   desc 'generate nondigest assets after default precompiling'
   task :compile_nondigest_assets do
     on roles(:app) do
-      execute "cd #{current_path}; RAILS_ENV=#{fetch(:rails_env)} #{fetch(:rake)} assets:precompile:nondigest"
+      execute "cd #{release_path}; RAILS_ENV=#{fetch(:rails_env)} #{fetch(:rake)} assets:precompile:nondigest"
     end
   end
   after 'deploy:compile_assets', 'deploy:compile_nondigest_assets'
