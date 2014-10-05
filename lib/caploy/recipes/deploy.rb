@@ -194,12 +194,6 @@ namespace :deploy do
       end
     end
   end
-  #after 'deploy', 'revisions'
-
-  after :finishing, 'deploy:cleanup'
-  after 'deploy:publishing', 'deploy:restart'
-  after 'deploy:symlink:shared', 'deploy:compile_assets_locally'
-  #after('deploy:compile_assets', 'deploy:build_missing_paperclip_styles')
 
   # make sure we're deploying what we think we're deploying
   # before :deploy, 'deploy:check_revision'
