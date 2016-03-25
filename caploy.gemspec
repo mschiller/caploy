@@ -17,10 +17,11 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency('gemcutter')
 
-  spec.add_dependency('capistrano-rails', '1.1.1')
-  spec.add_dependency('capistrano-bundler', '1.1.3')
-  spec.add_dependency('capistrano-rbenv', '2.0.2')
+  spec.add_dependency('capistrano-rails', '1.1.6')
+  spec.add_dependency('capistrano-bundler', '1.1.4')
+  spec.add_dependency('capistrano-rbenv', '2.0.4')
   spec.add_dependency('capistrano3-unicorn', '0.2.1')
+  spec.add_dependency('capistrano-db-tasks', '0.4')
 
   spec.version       = Caploy::VERSION
 end
