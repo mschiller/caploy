@@ -21,7 +21,6 @@ namespace :nginx do
         Restarts the nginx web-server.
   DESC
   task :restart do
-    #run "sudo god restart nginx"
     run "sudo /etc/init.d/nginx restart"
   end
 

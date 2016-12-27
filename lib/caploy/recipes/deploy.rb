@@ -1,78 +1,4 @@
 
-# Custom SSH Options
-# ==================
-# You may pass any option but keep in mind that net/ssh understands a
-# limited set of options, consult[net/ssh documentation](http://net-ssh.github.io/net-ssh/classes/Net/SSH.html#method-c-start).
-#
-# Global options
-# --------------
-#  set :ssh_options, {
-#    keys: %w(/home/rlisowski/.ssh/id_rsa),
-#    forward_agent: false,
-#    auth_methods: %w(password)
-#  }
-#
-# And/or per server (overrides global)
-# ------------------------------------
-# server 'example.com',
-#   user: 'user_name',
-#   roles: %w{web app},
-#   ssh_options: {
-#     user: 'user_name', # overrides user setting above
-#     keys: %w(/home/user_name/.ssh/id_rsa),
-#     forward_agent: false,
-#     auth_methods: %w(publickey password)
-#     # password: 'please use keys'
-#   }
-
-#set :unicorn_hard_restart, true if ENV['HARD_RESTART']
-
-# what specs should be run before deployment is allowed to
-# continue, see lib/capistrano/tasks/run_tests.cap
-# set :tests, []
-
-# files which need to be symlinked to other parts of the
-# filesystem. For example nginx virtualhosts, log rotation
-# init scripts etc.
-# set(:symlinks, [
-#   {
-#     source: "nginx.conf",
-#     link: "/etc/nginx/sites-enabled/#{fetch(:full_app_name)}"
-#   },
-#   {
-#     source: "unicorn_init.sh",
-#     link: "/etc/init.d/unicorn_#{fetch(:full_app_name)}"
-#   }
-# ])
-
-# which config files should be copied by deploy:setup_config
-# see documentation in lib/capistrano/tasks/setup_config.cap
-# for details of operations
-# set(:config_files, %w(
-#   nginx.conf
-#   database.example.yml
-#   unicorn.rb
-#   unicorn_init.sh
-# ))
-
-# Default branch is :master
-# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
-
-# Default value for :scm is :git
-# set :scm, :git
-
-# Default value for :format is :pretty
-# set :format, :pretty
-
-# Default value for :log_level is :debug
-# set :log_level, :debug
-
-# Default value for :pty is false
-# set :pty, true
-
-# Default value for default_env is {}
-# set :default_env, { path: "/opt/ruby/bin:$PATH" }
-
 set :rake, "#{fetch(:rbenv_prefix)} bundle exec rake"
 
 namespace :deploy do
@@ -93,8 +19,7 @@ namespace :deploy do
   end
   after 'deploy:compile_assets', 'deploy:compile_nondigest_assets'
 
-  desc "checks whether the currently checkout out revision matches the
-  remote one we're trying to deploy from"
+  desc "checks whether the currently checkout out revision matches the remote one we're trying to deploy from"
   task :check_revision do
     branch = fetch(:branch)
     unless `git rev-parse HEAD` == `git rev-parse origin/#{branch}`
